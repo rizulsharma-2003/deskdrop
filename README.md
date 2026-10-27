@@ -16,7 +16,7 @@ No accounts, no cloud, no server, no analytics.
 - **Screen edges for colleagues.** Assign a colleague to the left or right edge of your screen. Drag a file and push it against that edge: a portal opens showing them, and releasing sends the file.
 - **Proximity effects.** Sending sets off a burst of liquid light that wells up at the screen edge, with filaments racing along it and sparks drifting off. A matching glow appears at the top corner of the receiving Mac when the request arrives. Reduce Motion swaps it for a gentle fade, and it can be turned off.
 - **Chat, styled after Messages.** Message one colleague, or everyone nearby at once in **Everyone nearby**. Blue and grey bubbles with tails, timestamps between conversations, big emoji, and a searchable conversation list. History is saved on your Mac and is there every time you open DeskDrop. Messages to a colleague who's offline wait and are delivered when they reconnect. Colleagues who were away catch up on the group conversation, including reactions, when they connect. Unread counts appear in the header, the Dock and the menu bar.
-- **Liquid Glass.** On macOS 26 and later the header, the Nearby | Messages switcher, colleague cards, the Messages sidebar, the floating conversation header and message bar, tapbacks, buttons and the incoming-file panel are made of Liquid Glass. Older macOS versions get the same layout with frosted materials.
+- **Liquid Glass.** On macOS 26 and later the header, the Nearby | Messages switcher, colleague cards, the Nearby and Messages sidebars, the floating conversation header and message bar, tapbacks, buttons and the incoming-file panel are made of Liquid Glass. Older macOS versions get the same layout with frosted materials.
 - **Reactions.** Hover a message and click the smiley right beside it (or right-click › **React**) for the tapback bar (❤️ 👍 👎 😂 ‼️ ❓), or **+** for any emoji. Reactions sit on the bubble's corner for everyone in the conversation. Double-click a message to copy it.
 - **Message notifications.** When DeskDrop isn't in front, or its window is closed or minimized, new messages show a banner with your message sound. Click it to open the conversation, or reply right from the banner. Unread conversations show a blue count badge in the list.
 - **Emoji keyboard.** The smiley beside the message box opens a searchable emoji picker with categories and your recent emoji. The full macOS Character Viewer is one click away.
@@ -38,7 +38,7 @@ No accounts, no cloud, no server, no analytics.
 - **Settings:** profile photo, display name, availability, open at login, receiving folder, notifications, sounds, read receipts, duplicate handling, gestures, appearance, Markdown, GIPHY key and rating, GIF autoplay, stickers.
 - **Always reachable.** Quitting with ⌘Q (or from the Dock) keeps DeskDrop running in the menu bar, out of the Dock, so colleagues can still send you files and messages and you still get notifications. **Quit DeskDrop Completely** in the menu bar menu really stops it. Turn this off in **Settings › General**.
 - **Menu bar menu** that works with the main window closed: status, availability toggle, open, Messages, Recent Activity, Settings, Quit DeskDrop Completely.
-- **Recent Activity:** a local history of names, sizes, people and outcomes. File contents are never stored.
+- **Recent Activity:** a local history of names, sizes, people and outcomes, shown in the Activity sidebar beside Nearby (with transfers in progress above it) and in full in its own window. File contents are never stored.
 
 ## Requirements
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.8.0 — 2026-10-27
+
+### Changed
+- **Nearby has the new Liquid Glass look, like Messages.** It now has a floating glass sidebar beside a rounded stage, and keeps its place when you switch between Nearby and Messages.
+  - **The stage:** a large *Nearby* title showing how many colleagues are around and how many are available, with a glass refresh button. Macs are laid out in centred rows that wrap when the window is narrow.
+  - **The Activity sidebar:** transfers in progress at the top, with progress, Accept/Decline and Cancel, and your 40 most recent transfers below them, with who, when and how each one ended. Hover a file you received to show it in Finder, or a failed transfer to try it again. **See All** opens Recent Activity.
+  - **The sending hint:** now floats over the bottom of the stage on glass.
+
 ## 1.7.0 — 2026-10-26
 
 ### Added

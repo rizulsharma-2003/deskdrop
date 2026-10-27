@@ -17,13 +17,8 @@ struct MainWindowView: View {
             }
             switch model.mainSection {
             case .nearby:
-                Group {
-                    DeskStageView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    TransferTrayView()
-                    footer
-                }
-                .transition(.opacity)
+                NearbyView()
+                    .transition(.opacity)
             case .messages:
                 MessagesView()
                     .transition(.opacity)
@@ -38,18 +33,5 @@ struct MainWindowView: View {
         .sheet(isPresented: Binding(get: { model.showingUpdate }, set: { model.showingUpdate = $0 })) {
             UpdateSheet()
         }
-    }
-
-    private var footer: some View {
-        HStack(spacing: 6) {
-            Image(systemName: "hand.point.up.left")
-                .font(.system(size: 11))
-            Text("Drag files from Finder onto a colleague’s Mac to send them, or click a Mac to choose files.")
-                .font(.system(size: 11.5))
-        }
-        .foregroundStyle(.tertiary)
-        .padding(.bottom, 14)
-        .padding(.top, 2)
-        .accessibilityElement(children: .combine)
     }
 }

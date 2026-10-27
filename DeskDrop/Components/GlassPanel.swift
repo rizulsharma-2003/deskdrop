@@ -77,6 +77,19 @@ extension View {
     func glassBackground(cornerRadius: CGFloat = Theme.Radius.panel, tint: Color = .clear) -> some View {
         modifier(GlassBackground(cornerRadius: cornerRadius, tint: tint))
     }
+
+    /// The main window's floating glass sidebar (Messages and Nearby).
+    func sidebarGlass() -> some View {
+        liquidGlass(in: RoundedRectangle(cornerRadius: Theme.Radius.pane, style: .continuous))
+    }
+
+    /// The pane beside the sidebar: rounded, with a fine edge and a soft shadow.
+    func contentPane() -> some View {
+        let shape = RoundedRectangle(cornerRadius: Theme.Radius.pane, style: .continuous)
+        return clipShape(shape)
+            .overlay(shape.strokeBorder(Theme.hairline))
+            .shadow(color: Theme.shadow, radius: 14, y: 6)
+    }
 }
 
 /// A padded glass container.

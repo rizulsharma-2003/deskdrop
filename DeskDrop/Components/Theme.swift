@@ -34,6 +34,8 @@ enum Theme {
     static let chatField = Color.dynamic(light: 0xFFFFFF, dark: 0x2C2C2E)
 
     enum Radius {
+        /// The main window's sidebars and panes, in Messages and Nearby.
+        static let pane: CGFloat = 24
         static let card: CGFloat = 22
         static let panel: CGFloat = 16
         static let row: CGFloat = 12

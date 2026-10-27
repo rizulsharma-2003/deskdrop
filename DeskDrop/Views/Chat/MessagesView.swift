@@ -10,13 +10,11 @@ struct MessagesView: View {
         HStack(spacing: 10) {
             sidebar
                 .frame(width: 290)
-                .liquidGlass(in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+                .sidebarGlass()
             ConversationView(conversation: model.chatSelection)
                 .id(model.chatSelection)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-                .overlay(RoundedRectangle(cornerRadius: 24, style: .continuous).strokeBorder(Theme.hairline))
-                .shadow(color: Theme.shadow, radius: 14, y: 6)
+                .contentPane()
         }
         .padding(.horizontal, 10)
         .padding(.top, 6)

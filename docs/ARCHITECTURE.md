@@ -6,7 +6,7 @@ DeskDrop is a single-target SwiftUI app with AppKit where SwiftUI falls short: t
 
 ```
 ┌──────────────────────────────── Views (SwiftUI) ─────────────────────────────────┐
-│ MainWindow: Header · DeskStage · DeviceCard · EmptyState · TransferTray · Banner │
+│ MainWindow: Header · Nearby (ActivitySidebar · DeskStage · DeviceCard) · Banner  │
 │ Throw: FileDropDelegate · ThrowAnimationView · TransferFlightOverlay             │
 │ Receiving: IncomingPanelController (NSPanel) · IncomingTransferView · Progress   │
 │ Activity · Settings · MenuBar                                                    │
@@ -88,7 +88,7 @@ The effects use only SwiftUI `Canvas` drawing (radial and conic gradients, addit
   - Records are matched by `peerID`. Entries from before 1.6 are matched by name, only when that name is unique among known Macs.
   - Each becomes a `ConversationFile`, with its phase, progress, the live `Transfer` for actions, and a `fileURL` when there's something on disk to preview.
   - `ChatRow.rows(for:files:)` merges messages and files by time. A file breaks a run of bubbles, and a gap of 15 minutes or more gets a timestamp.
-  - `FileBubbleView` draws the card and calls the same view-model actions as the transfer tray (accept, decline, cancel, retry, open, reveal). It previews with SwiftUI's `quickLookPreview`.
+  - `FileBubbleView` draws the card and calls the same view-model actions as the Activity sidebar (accept, decline, cancel, retry, open, reveal). It previews with SwiftUI's `quickLookPreview`.
   - Conversation summaries also consider the latest file.
 - **Typing:** `ChatService.draftChanged(in:isEmpty:)` is called as the draft changes. It sends `chatTyping(true)` at most every 3 s and `chatTyping(false)` once when the draft empties; sending a message resets it. Received typing state lives in `typingPeers` and expires after 6 s or when a message arrives. Only colleagues with `PeerDevice.supportsTyping` (the hello's `typing` capability) are sent anything.
 - **Read receipts:** when a one-on-one conversation becomes active, or a message arrives while it is, `ChatService` sends `chatRead` for the newest incoming message (once per message, only if `SettingsStore.sendReadReceipts`). The sender's `ChatStore.markReadByRecipient` moves its outgoing messages up to that one to *read* with the time. Delivery only moves forward: pending → sent → delivered → read.
