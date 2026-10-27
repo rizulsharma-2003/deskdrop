@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.2 — 2026-10-27
+
+### Changed
+- A test release to check that DeskDrop updates itself. Nothing else is different from 1.8.1.
+
 ## 1.8.1 — 2026-10-27
 
 ### Fixed
