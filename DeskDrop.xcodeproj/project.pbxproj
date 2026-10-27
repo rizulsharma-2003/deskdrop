@@ -1,0 +1,711 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		DD0000000000000000000B44 /* DeskDropUpdater.xpc in Embed XPC Services */ = {isa = PBXBuildFile; fileRef = DD0000000000000000000B10 /* DeskDropUpdater.xpc */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DD0000000000000000000A51 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DD0000000000000000000A01 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DD0000000000000000000A30;
+			remoteInfo = DeskDrop;
+		};
+		DD0000000000000000000A53 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DD0000000000000000000A01 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DD0000000000000000000A30;
+			remoteInfo = DeskDrop;
+		};
+		DD0000000000000000000B51 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DD0000000000000000000A01 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DD0000000000000000000B30;
+			remoteInfo = DeskDropUpdater;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DD0000000000000000000B43 /* Embed XPC Services */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/XPCServices";
+			dstSubfolderSpec = 16;
+			files = (
+				DD0000000000000000000B44 /* DeskDropUpdater.xpc in Embed XPC Services */,
+			);
+			name = "Embed XPC Services";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		DD0000000000000000000A10 /* DeskDrop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DeskDrop.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD0000000000000000000A11 /* DeskDropTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeskDropTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD0000000000000000000A12 /* DeskDropUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeskDropUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD0000000000000000000A13 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		DD0000000000000000000A14 /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
+		DD0000000000000000000A15 /* docs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = docs; sourceTree = "<group>"; };
+		DD0000000000000000000B10 /* DeskDropUpdater.xpc */ = {isa = PBXFileReference; explicitFileType = "wrapper.xpc-service"; includeInIndex = 0; path = DeskDropUpdater.xpc; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD0000000000000000000B11 /* DeskDrop.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = DeskDrop.xcconfig; path = Config/DeskDrop.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		DD0000000000000000000A23 /* Exceptions for "DeskDrop" folder in "DeskDrop" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Resources/Info.plist,
+			);
+			target = DD0000000000000000000A30 /* DeskDrop */;
+		};
+		DD0000000000000000000B23 /* Exceptions for "DeskDropUpdater" folder in "DeskDropUpdater" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = DD0000000000000000000B30 /* DeskDropUpdater */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		DD0000000000000000000A20 /* DeskDrop */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				DD0000000000000000000A23 /* Exceptions for "DeskDrop" folder in "DeskDrop" target */,
+			);
+			path = DeskDrop;
+			sourceTree = "<group>";
+		};
+		DD0000000000000000000A21 /* DeskDropTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = DeskDropTests;
+			sourceTree = "<group>";
+		};
+		DD0000000000000000000A22 /* DeskDropUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = DeskDropUITests;
+			sourceTree = "<group>";
+		};
+		DD0000000000000000000B20 /* DeskDropUpdater */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				DD0000000000000000000B23 /* Exceptions for "DeskDropUpdater" folder in "DeskDropUpdater" target */,
+			);
+			path = DeskDropUpdater;
+			sourceTree = "<group>";
+		};
+		DD0000000000000000000B21 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Shared;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DD0000000000000000000A41 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DD0000000000000000000A44 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DD0000000000000000000A47 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DD0000000000000000000B41 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		DD0000000000000000000A02 = {
+			isa = PBXGroup;
+			children = (
+				DD0000000000000000000A13 /* README.md */,
+				DD0000000000000000000A14 /* CHANGELOG.md */,
+				DD0000000000000000000A15 /* docs */,
+				DD0000000000000000000B11 /* DeskDrop.xcconfig */,
+				DD0000000000000000000A20 /* DeskDrop */,
+				DD0000000000000000000B21 /* Shared */,
+				DD0000000000000000000B20 /* DeskDropUpdater */,
+				DD0000000000000000000A21 /* DeskDropTests */,
+				DD0000000000000000000A22 /* DeskDropUITests */,
+				DD0000000000000000000A03 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DD0000000000000000000A03 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DD0000000000000000000A10 /* DeskDrop.app */,
+				DD0000000000000000000A11 /* DeskDropTests.xctest */,
+				DD0000000000000000000A12 /* DeskDropUITests.xctest */,
+				DD0000000000000000000B10 /* DeskDropUpdater.xpc */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DD0000000000000000000A30 /* DeskDrop */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DD0000000000000000000A61 /* Build configuration list for PBXNativeTarget "DeskDrop" */;
+			buildPhases = (
+				DD0000000000000000000A40 /* Sources */,
+				DD0000000000000000000A41 /* Frameworks */,
+				DD0000000000000000000A42 /* Resources */,
+				DD0000000000000000000B43 /* Embed XPC Services */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DD0000000000000000000B50 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				DD0000000000000000000A20 /* DeskDrop */,
+				DD0000000000000000000B21 /* Shared */,
+			);
+			name = DeskDrop;
+			packageProductDependencies = (
+			);
+			productName = DeskDrop;
+			productReference = DD0000000000000000000A10 /* DeskDrop.app */;
+			productType = "com.apple.product-type.application";
+		};
+		DD0000000000000000000A31 /* DeskDropTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DD0000000000000000000A62 /* Build configuration list for PBXNativeTarget "DeskDropTests" */;
+			buildPhases = (
+				DD0000000000000000000A43 /* Sources */,
+				DD0000000000000000000A44 /* Frameworks */,
+				DD0000000000000000000A45 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DD0000000000000000000A50 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				DD0000000000000000000A21 /* DeskDropTests */,
+			);
+			name = DeskDropTests;
+			packageProductDependencies = (
+			);
+			productName = DeskDropTests;
+			productReference = DD0000000000000000000A11 /* DeskDropTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		DD0000000000000000000A32 /* DeskDropUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DD0000000000000000000A63 /* Build configuration list for PBXNativeTarget "DeskDropUITests" */;
+			buildPhases = (
+				DD0000000000000000000A46 /* Sources */,
+				DD0000000000000000000A47 /* Frameworks */,
+				DD0000000000000000000A48 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DD0000000000000000000A52 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				DD0000000000000000000A22 /* DeskDropUITests */,
+			);
+			name = DeskDropUITests;
+			packageProductDependencies = (
+			);
+			productName = DeskDropUITests;
+			productReference = DD0000000000000000000A12 /* DeskDropUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		DD0000000000000000000B30 /* DeskDropUpdater */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DD0000000000000000000B60 /* Build configuration list for PBXNativeTarget "DeskDropUpdater" */;
+			buildPhases = (
+				DD0000000000000000000B40 /* Sources */,
+				DD0000000000000000000B41 /* Frameworks */,
+				DD0000000000000000000B42 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				DD0000000000000000000B20 /* DeskDropUpdater */,
+				DD0000000000000000000B21 /* Shared */,
+			);
+			name = DeskDropUpdater;
+			packageProductDependencies = (
+			);
+			productName = DeskDropUpdater;
+			productReference = DD0000000000000000000B10 /* DeskDropUpdater.xpc */;
+			productType = "com.apple.product-type.xpc-service";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DD0000000000000000000A01 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2700;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					DD0000000000000000000A30 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					DD0000000000000000000A31 = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = DD0000000000000000000A30;
+					};
+					DD0000000000000000000A32 = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = DD0000000000000000000A30;
+					};
+					DD0000000000000000000B30 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+				};
+			};
+			buildConfigurationList = DD0000000000000000000A60 /* Build configuration list for PBXProject "DeskDrop" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = DD0000000000000000000A02;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = DD0000000000000000000A03 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				DD0000000000000000000A30 /* DeskDrop */,
+				DD0000000000000000000A31 /* DeskDropTests */,
+				DD0000000000000000000A32 /* DeskDropUITests */,
+				DD0000000000000000000B30 /* DeskDropUpdater */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DD0000000000000000000A42 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DD0000000000000000000A45 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DD0000000000000000000A48 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DD0000000000000000000B42 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DD0000000000000000000A40 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DD0000000000000000000A43 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DD0000000000000000000A46 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DD0000000000000000000B40 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DD0000000000000000000A50 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DD0000000000000000000A30 /* DeskDrop */;
+			targetProxy = DD0000000000000000000A51 /* PBXContainerItemProxy */;
+		};
+		DD0000000000000000000A52 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DD0000000000000000000A30 /* DeskDrop */;
+			targetProxy = DD0000000000000000000A53 /* PBXContainerItemProxy */;
+		};
+		DD0000000000000000000B50 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DD0000000000000000000B30 /* DeskDropUpdater */;
+			targetProxy = DD0000000000000000000B51 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		DD0000000000000000000A70 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DD0000000000000000000B11 /* DeskDrop.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		DD0000000000000000000A71 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DD0000000000000000000B11 /* DeskDrop.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		DD0000000000000000000A72 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = DeskDrop/DeskDrop.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 10;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DeskDrop/Resources/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = DeskDrop;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 DeskDrop. All rights reserved.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.7.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.deskdrop.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Debug;
+		};
+		DD0000000000000000000A73 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = DeskDrop/DeskDrop.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 10;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DeskDrop/Resources/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = DeskDrop;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 DeskDrop. All rights reserved.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.7.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.deskdrop.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Release;
+		};
+		DD0000000000000000000A74 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 10;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.7.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.deskdrop.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DeskDrop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/DeskDrop";
+			};
+			name = Debug;
+		};
+		DD0000000000000000000A75 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 10;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.7.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.deskdrop.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DeskDrop.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/DeskDrop";
+			};
+			name = Release;
+		};
+		DD0000000000000000000A76 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 10;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.7.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.deskdrop.app.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_TARGET_NAME = DeskDrop;
+			};
+			name = Debug;
+		};
+		DD0000000000000000000A77 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 10;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.7.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.deskdrop.app.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_TARGET_NAME = DeskDrop;
+			};
+			name = Release;
+		};
+		DD0000000000000000000B72 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 10;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DeskDropUpdater/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "DeskDrop Updater";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 DeskDrop. All rights reserved.";
+				MARKETING_VERSION = 1.7.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.deskdrop.app.Updater;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+			};
+			name = Debug;
+		};
+		DD0000000000000000000B73 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 10;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DeskDropUpdater/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "DeskDrop Updater";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 DeskDrop. All rights reserved.";
+				MARKETING_VERSION = 1.7.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.deskdrop.app.Updater;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		DD0000000000000000000A60 /* Build configuration list for PBXProject "DeskDrop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DD0000000000000000000A70 /* Debug */,
+				DD0000000000000000000A71 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DD0000000000000000000A61 /* Build configuration list for PBXNativeTarget "DeskDrop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DD0000000000000000000A72 /* Debug */,
+				DD0000000000000000000A73 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DD0000000000000000000A62 /* Build configuration list for PBXNativeTarget "DeskDropTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DD0000000000000000000A74 /* Debug */,
+				DD0000000000000000000A75 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DD0000000000000000000A63 /* Build configuration list for PBXNativeTarget "DeskDropUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DD0000000000000000000A76 /* Debug */,
+				DD0000000000000000000A77 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DD0000000000000000000B60 /* Build configuration list for PBXNativeTarget "DeskDropUpdater" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DD0000000000000000000B72 /* Debug */,
+				DD0000000000000000000B73 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = DD0000000000000000000A01 /* Project object */;
+}

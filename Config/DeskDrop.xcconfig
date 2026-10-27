@@ -1,0 +1,6 @@
+// Shared build settings for DeskDrop and its installer helper.
+
+// The publisher's update-signing public key (64 hex characters). Empty means
+// in-app updates are off. `scripts/update-key.sh create` writes UpdateKey.xcconfig.
+DESKDROP_UPDATE_PUBLIC_KEY =
+#include? "UpdateKey.xcconfig"

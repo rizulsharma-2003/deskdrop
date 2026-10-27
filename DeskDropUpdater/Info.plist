@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>XPCService</key>
+	<dict>
+		<key>ServiceType</key>
+		<string>Application</string>
+	</dict>
+	<!-- The publisher's update-signing public key (hex), from Config/UpdateKey.xcconfig. -->
+	<key>DeskDropUpdatePublicKey</key>
+	<string>$(DESKDROP_UPDATE_PUBLIC_KEY)</string>
+</dict>
+</plist>

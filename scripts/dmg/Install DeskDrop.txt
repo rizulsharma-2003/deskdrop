@@ -1,0 +1,71 @@
+Installing DeskDrop
+===================
+
+1. Drag DeskDrop onto the Applications folder in this window.
+
+2. Open DeskDrop from your Applications folder.
+
+   macOS will say it can't verify the developer, because this build
+   isn't notarized by Apple. Click "Done" (not "Move to Trash").
+
+3. Open System Settings > Privacy & Security, scroll down to the
+   message about DeskDrop, click "Open Anyway", and confirm.
+
+   On macOS 14 Sonoma you can instead Control-click DeskDrop in
+   Applications, choose "Open", then click "Open" again.
+
+   You only need to do this once.
+
+4. When DeskDrop asks to find devices on your local network,
+   click "Allow". Without it, DeskDrop can't see colleagues.
+
+Using DeskDrop
+--------------
+- Colleagues running DeskDrop on the same network appear as Macs
+  side by side in the window.
+- To send, drag files from Finder onto a colleague's Mac and let go.
+- When someone sends you a file, a request appears in the top-right
+  corner of your screen. Nothing is saved until you click Accept.
+  Received files go to your Downloads folder.
+- Closing the window, or quitting with Cmd-Q, keeps DeskDrop
+  running in the menu bar so colleagues can still send you files
+  and messages, and you still get notifications. To stop it, click
+  the menu bar icon and choose "Quit DeskDrop Completely".
+- Installing a newer version? Quit DeskDrop Completely first.
+
+Shortcuts (no window needed)
+----------------------------
+- Hold to share: start dragging any file, then pause for a moment.
+  Your colleagues appear around the cursor. Drop on one to send.
+- Screen edges: right-click a colleague in DeskDrop and choose
+  "Assign to Left Edge" or "Assign to Right Edge". Then drag a file
+  and push it against that edge of your screen. A portal opens;
+  let go to send.
+- Change these in DeskDrop > Settings > Gestures.
+
+Messages
+--------
+- Click "Messages" at the top of the DeskDrop window (or press Cmd-2).
+  Click "Nearby" (Cmd-1) to go back to your colleagues' Macs.
+- "Everyone nearby" is a group chat with every colleague running
+  DeskDrop; you can also message one colleague directly.
+- Your chat history is saved on your Mac. Messages to someone who
+  is offline are delivered when they're back.
+- Hover a message and click the smiley beside it to react, or
+  click + for any emoji. Double-click a message to copy it.
+  The smiley next to the message box opens emoji.
+- Allow notifications when DeskDrop asks, so new messages show a
+  banner while DeskDrop is in the background. You can reply right
+  from the banner. (Turned them off? System Settings >
+  Notifications > DeskDrop.)
+- Under your last message you'll see Delivered, then Read once
+  your colleague opens the chat (you can turn read receipts off).
+- Files you send to or receive from a colleague show up in your
+  chat with them. Accept a request right there, then click the file
+  to preview it or double-click to open it.
+- Pick your own sounds for files and messages in
+  DeskDrop > Settings > Receiving > Sounds.
+
+DeskDrop sends files directly between Macs over an encrypted
+connection. No account, no cloud, no internet needed.
+It is not Apple's AirDrop.

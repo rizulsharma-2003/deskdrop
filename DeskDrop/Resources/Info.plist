@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>DeskDrop uses your local network to discover nearby colleagues running DeskDrop and transfer files directly between your Macs.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_deskdrop._tcp</string>
+		<string>_deskdrop._udp</string>
+	</array>
+	<key>DeskDropUpdatePublicKey</key>
+	<string>$(DESKDROP_UPDATE_PUBLIC_KEY)</string>
+	<key>GIPHYAPIKey</key>
+	<string>$(GIPHY_API_KEY)</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.productivity</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+</dict>
+</plist>
