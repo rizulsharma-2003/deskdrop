@@ -14,6 +14,16 @@ private func makePackage(in root: TemporaryDirectory, version: String, key: Curv
     return url
 }
 
+@Suite("App location")
+struct AppLocationTests {
+    @Test("A copy macOS didn't translocate is updated where it is")
+    func ordinaryCopy() {
+        #expect(AppLocation.original(of: Bundle.main.bundleURL) == Bundle.main.bundleURL)
+        let elsewhere = URL(fileURLWithPath: "/Applications/DeskDrop.app")
+        #expect(AppLocation.original(of: elsewhere) == elsewhere)
+    }
+}
+
 @Suite("Update packages")
 struct UpdatePackageTests {
     private let key = Curve25519.Signing.PrivateKey()
@@ -103,9 +113,10 @@ private final class FakeInstaller: UpdateInstalling {
     var installed: [Data] = []
     var failure: String?
 
-    func install(packageAt url: URL) async throws {
+    func install(packageAt url: URL) async throws -> URL {
         if let failure { throw UpdateInstaller.Failure.helper(failure) }
         installed.append(try Data(contentsOf: url))
+        return URL(fileURLWithPath: "/Applications/DeskDrop.app")
     }
 }
 
@@ -133,7 +144,7 @@ private final class UpdateHarness {
         bob = UpdateService(transport: bobWire, publicKey: bobKey ?? key.publicKey, bundleID: "com.deskdrop.app",
                             currentVersion: "1.7.0", directory: root.subdirectory("BobUpdates"), installer: bobInstaller)
         bob.onUpdateFound = { [unowned self] manifest, _ in found.append(manifest.version) }
-        bob.onInstalled = { [unowned self] _ in relaunched += 1 }
+        bob.onInstalled = { [unowned self] _, _ in relaunched += 1 }
     }
 
     func package(_ version: String, signedWith signer: Curve25519.Signing.PrivateKey? = nil) throws -> URL {
@@ -365,7 +376,7 @@ struct AutomaticUpdateTests {
                                     currentVersion: "1.7.0", directory: root.subdirectory("Updates-\(UUID().uuidString)"),
                                     installer: installer, feed: feed, installsAutomatically: { box.automatic },
                                     isIdle: { box.idle })
-        service.onInstalled = { box.installed.append($0) }
+        service.onInstalled = { automatic, _ in box.installed.append(automatic) }
         service.onUpdateFound = { manifest, from in box.found.append("\(manifest.version) from \(from)") }
         return (service, wire)
     }
@@ -437,7 +448,7 @@ struct AutomaticUpdateTests {
     @Test("An update offered by a nearby Mac downloads by itself and installs when idle")
     func fromColleague() async throws {
         let harness = UpdateHarness()
-        harness.bob.onInstalled = { _ in harness.relaunched += 1 }
+        harness.bob.onInstalled = { _, _ in harness.relaunched += 1 }
         try harness.alice.publish(try harness.package("1.8.0"))
         await waitUntil("offer") { harness.bob.available != nil }
         // Bob's harness has automatic updates off: nothing downloads until he clicks.
@@ -450,7 +461,7 @@ struct AutomaticUpdateTests {
         let carol = UpdateService(transport: harness.bobWire, publicKey: harness.key.publicKey, bundleID: "com.deskdrop.app",
                                   currentVersion: "1.7.0", directory: root.subdirectory("Carol"), installer: FakeInstaller(),
                                   installsAutomatically: { box.automatic }, isIdle: { box.idle })
-        carol.onInstalled = { box.installed.append($0) }
+        carol.onInstalled = { automatic, _ in box.installed.append(automatic) }
         harness.aliceWire.connectAndAnnounce()
         await waitUntil("downloaded and installed quietly") { box.installed == [true] }
     }

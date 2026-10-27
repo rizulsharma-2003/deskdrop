@@ -66,14 +66,14 @@ final class AppLifecycleManager {
         model.updates.onUpdateFound = { [weak self] manifest, name in
             self?.notifications.notifyUpdate(version: manifest.version, from: name)
         }
-        model.updates.onInstalled = { [weak self] automatic in
+        model.updates.onInstalled = { [weak self] automatic, app in
             guard let self else { return }
             if automatic {
                 // Come back as we were: a closed window stays closed.
                 let showing = NSApp.windows.contains { $0.isVisible && $0.identifier?.rawValue == SceneID.main }
                 model.settings.noteQuietRelaunch(showingWindow: showing)
             }
-            UpdateInstaller.relaunch { self.quitCompletely() }
+            UpdateInstaller.relaunch(app) { self.quitCompletely() }
         }
     }
 

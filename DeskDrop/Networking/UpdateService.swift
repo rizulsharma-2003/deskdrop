@@ -36,7 +36,9 @@ enum UpdateResource {
 /// tests use a stand-in.
 @MainActor
 protocol UpdateInstalling {
-    func install(packageAt url: URL) async throws
+    /// Returns where the new app is: usually where this one is, but not when
+    /// macOS runs this one from a translocated copy.
+    func install(packageAt url: URL) async throws -> URL
 }
 
 /// DeskDrop updates, from GitHub Releases and from Mac to Mac.
@@ -89,9 +91,10 @@ final class UpdateService {
 
     /// A newer version was found (once per version), with who offered it.
     @ObservationIgnored var onUpdateFound: ((UpdateManifest, String) -> Void)?
-    /// The new version is installed; relaunch into it. True when it was installed
-    /// automatically (so relaunch quietly), false when someone clicked Update.
-    @ObservationIgnored var onInstalled: ((Bool) -> Void)?
+    /// The new version is installed at `app`; relaunch into it. `automatic` is
+    /// true when it was installed automatically (so relaunch quietly), false when
+    /// someone clicked Update.
+    @ObservationIgnored var onInstalled: ((_ automatic: Bool, _ app: URL) -> Void)?
 
     @ObservationIgnored private let transport: any UpdateTransport
     @ObservationIgnored private let publicKey: Curve25519.Signing.PublicKey?
@@ -310,10 +313,11 @@ final class UpdateService {
         let url = packageURL
         Task {
             do {
-                try await installer.install(packageAt: url)
-                Log.app.notice("Installed DeskDrop \(available.manifest.version, privacy: .public)")
-                onInstalled?(!installWhenDownloaded)
+                let app = try await installer.install(packageAt: url)
+                Log.app.notice("Installed DeskDrop \(available.manifest.version, privacy: .public) at \(app.path, privacy: .public)")
+                onInstalled?(!installWhenDownloaded, app)
             } catch {
+                Log.app.error("Couldn’t install DeskDrop \(available.manifest.version, privacy: .public): \(error.localizedDescription, privacy: .public)")
                 phase = .failed(error.localizedDescription)
             }
         }

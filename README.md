@@ -156,7 +156,9 @@ To reach colleagues nearby straight away (or Macs without internet), also open t
 
 **How it's kept safe:** GitHub is only a place to download from; nothing is trusted because it came from there. Only packages signed with your private key are accepted, checked by every Mac against the public key built into its copy and again by the installer helper. A package must be for DeskDrop, newer than what's installed, intact (SHA-256), and contain a validly code-signed app. If your build is signed with a Developer ID, updates must be signed by the same team. Keep the private key safe: anyone with it can publish DeskDrop updates to your colleagues. If it's lost, publish a new key in a build that colleagues install by hand.
 
-The installer helper (`DeskDropUpdater.xpc`, inside the app) runs outside the App Sandbox, because a sandboxed app can't replace itself and every file it writes is quarantined. It can only install a signed, newer DeskDrop over the copy it's in. Installing needs permission to write where DeskDrop is (normally /Applications, which administrator accounts have).
+The installer helper (`DeskDropUpdater.xpc`, inside the app) runs outside the App Sandbox, because a sandboxed app can't replace itself and every file it writes is quarantined. It can only install a signed, newer DeskDrop over the copy it's in. Installing needs permission to write where DeskDrop is (normally /Applications, which administrator accounts have). It can't update a copy running straight from the DMG; DeskDrop says so and asks to be moved to Applications.
+
+**If an update says the volume is read only:** copies of DeskDrop 1.8.0 and earlier can't update themselves when macOS runs them from a hidden read-only copy, which it does for a downloaded app opened with **Open Anyway**. Quit DeskDrop (menu bar › **Quit DeskDrop Completely**), run `xattr -dr com.apple.quarantine /Applications/DeskDrop.app` in Terminal (or install the latest DMG over it), and open it again. From 1.8.1 on, DeskDrop handles this itself.
 
 ## Tests
 
@@ -214,7 +216,7 @@ DeskDrop/
   Utilities/      Logging, formatting, timers, small helpers
   Resources/      Info.plist
 DeskDropUpdater/  The installer helper (XPC service, outside the sandbox) for in-app updates
-Shared/           Update package format, shared by the app, the helper and the signing tool
+Shared/           Update package format and app location, shared by the app, the helper and the signing tool
 Config/           DeskDrop.xcconfig; UpdateKey.xcconfig (your public update key, once created)
 DeskDropTests/    Swift Testing unit + integration tests
 DeskDropUITests/  XCTest UI tests

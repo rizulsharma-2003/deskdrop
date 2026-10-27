@@ -16,14 +16,14 @@ struct UpdateInstaller: UpdateInstalling {
         }
     }
 
-    func install(packageAt url: URL) async throws {
+    func install(packageAt url: URL) async throws -> URL {
         let file = UncheckedSendable(try FileHandle(forReadingFrom: url))
         defer { try? file.value.close() }
         let connection = NSXPCConnection(serviceName: UpdaterService.name)
         connection.remoteObjectInterface = NSXPCInterface(with: UpdaterXPC.self)
         connection.resume()
         defer { connection.invalidate() }
-        let message: String? = try await withCheckedThrowingContinuation { continuation in
+        let installedPath: String = try await withCheckedThrowingContinuation { continuation in
             let resumed = UncheckedSendable(ResumeOnce(continuation))
             let proxy = connection.remoteObjectProxyWithErrorHandler { @Sendable _ in
                 resumed.value.resume(throwing: Failure.helperUnavailable)
@@ -32,17 +32,21 @@ struct UpdateInstaller: UpdateInstalling {
                 resumed.value.resume(throwing: Failure.helperUnavailable)
                 return
             }
-            updater.installUpdate(file.value) { @Sendable message in
-                resumed.value.resume(returning: message)
+            updater.installUpdate(file.value) { @Sendable installedPath, failure in
+                if let installedPath, failure == nil {
+                    resumed.value.resume(returning: installedPath)
+                } else {
+                    resumed.value.resume(throwing: Failure.helper(failure ?? String(localized: "The update couldn’t be installed.")))
+                }
             }
         }
-        if let message { throw Failure.helper(message) }
+        return URL(fileURLWithPath: installedPath)
     }
 
-    /// Opens the newly installed copy, which waits for this one to quit before it
-    /// starts sharing, then quits this one. (A sandboxed app can't pass launch
-    /// arguments, so the new copy finds this one by its location instead.)
-    static func relaunch(quit: () -> Void) {
+    /// Opens the newly installed copy at `app`, which waits for this one to quit
+    /// before it starts sharing, then quits this one. (A sandboxed app can't pass
+    /// launch arguments, so the new copy finds this one by its location instead.)
+    static func relaunch(_ app: URL, quit: () -> Void) {
         #if DEBUG
         // A test copy must not come back as a real DeskDrop with your settings.
         if UITestSupport.isUITesting {
@@ -53,7 +57,7 @@ struct UpdateInstaller: UpdateInstalling {
         #endif
         let configuration = NSWorkspace.OpenConfiguration()
         configuration.createsNewApplicationInstance = true
-        NSWorkspace.shared.openApplication(at: Bundle.main.bundleURL, configuration: configuration) { @Sendable _, error in
+        NSWorkspace.shared.openApplication(at: app, configuration: configuration) { @Sendable _, error in
             if let error { Log.app.error("Relaunch failed: \(error.localizedDescription, privacy: .public)") }
         }
         quit()
@@ -89,13 +93,17 @@ private final class ResumeOnce<T: Sendable>: @unchecked Sendable {
 /// After an update, the new copy of DeskDrop waits for the old one (same app,
 /// same place) to finish quitting, so the two never share the network at once.
 enum RelaunchSupport {
-    /// Other running copies of this app at this location.
+    /// Other running copies of this app at this location, including one macOS
+    /// ran from a translocated copy of it (the copy an update replaced).
     @MainActor
     static var previousCopies: [NSRunningApplication] {
         let me = ProcessInfo.processInfo.processIdentifier
-        let path = Bundle.main.bundleURL.standardizedFileURL.path
+        let path = AppLocation.original(of: Bundle.main.bundleURL).standardizedFileURL.path
         return NSRunningApplication.runningApplications(withBundleIdentifier: Bundle.main.bundleIdentifier ?? "")
-            .filter { $0.processIdentifier != me && $0.bundleURL?.standardizedFileURL.path == path }
+            .filter { other in
+                guard other.processIdentifier != me, let url = other.bundleURL else { return false }
+                return url.standardizedFileURL.path == path || AppLocation.original(of: url).standardizedFileURL.path == path
+            }
     }
 
     /// Waits (up to 10 s) for them to quit.

@@ -8,9 +8,10 @@ import Foundation
 @objc protocol UpdaterXPC {
     /// Installs the package read from `package`, an open file (the helper can't
     /// look inside the app's sandbox container, and works on its own copy so the
-    /// file can't change between checking and installing). Replies nil on
-    /// success, or a message to show.
-    func installUpdate(_ package: FileHandle, withReply reply: @escaping @Sendable (String?) -> Void)
+    /// file can't change between checking and installing). Replies with the path
+    /// of the installed app to relaunch, which isn't where the running copy is
+    /// when macOS translocated it, or with a message to show.
+    func installUpdate(_ package: FileHandle, withReply reply: @escaping @Sendable (_ installedPath: String?, _ failure: String?) -> Void)
 }
 
 enum UpdaterService {

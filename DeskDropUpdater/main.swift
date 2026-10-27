@@ -10,12 +10,12 @@ final class UpdaterEndpoint: NSObject, UpdaterXPC, NSXPCListenerDelegate, @unche
         return true
     }
 
-    func installUpdate(_ package: FileHandle, withReply reply: @escaping @Sendable (String?) -> Void) {
+    func installUpdate(_ package: FileHandle, withReply reply: @escaping @Sendable (String?, String?) -> Void) {
         do {
-            try Installer(helperBundle: .main).install(from: package)
-            reply(nil)
+            let installed = try Installer(helperBundle: .main).install(from: package)
+            reply(installed.path, nil)
         } catch {
-            reply(error.localizedDescription)
+            reply(nil, error.localizedDescription)
         }
     }
 }

@@ -13,10 +13,15 @@ import Security
 ///
 /// Then the quarantine flag is cleared (the files came from another Mac, already
 /// verified) and the old app goes to the Trash as the new one takes its place.
+///
+/// The app replaced is the original, not the read-only copy macOS runs a
+/// quarantined download from (see `AppLocation`), so the update also ends the
+/// translocation: the new copy has no quarantine flag.
 struct Installer {
     enum Failure: LocalizedError {
         case notConfigured
         case notInsideApp
+        case readOnlyLocation(String)
         case package(UpdatePackage.Failure)
         case notNewer(String)
         case systemTooOld(String)
@@ -29,6 +34,8 @@ struct Installer {
             switch self {
             case .notConfigured: "This copy of DeskDrop wasn’t built with an update key."
             case .notInsideApp: "The updater isn’t inside DeskDrop.app."
+            case .readOnlyLocation(let folder):
+                "DeskDrop can’t replace itself in “\(folder)”. Move DeskDrop to your Applications folder, open it from there, and try again."
             case .package(.badSignature): "The update isn’t signed by DeskDrop’s publisher."
             case .package(.archiveMismatch): "The update is damaged or incomplete."
             case .package: "This isn’t a DeskDrop update."
@@ -46,7 +53,8 @@ struct Installer {
     let helperBundle: Bundle
 
     /// Copies the package out of `handle`, then checks and installs the copy.
-    func install(from handle: FileHandle) throws {
+    /// Returns where the new app is.
+    func install(from handle: FileHandle) throws -> URL {
         let copy = FileManager.default.temporaryDirectory.appendingPathComponent("DeskDrop-\(UUID().uuidString).deskdropupdate")
         FileManager.default.createFile(atPath: copy.path, contents: nil)
         defer { try? FileManager.default.removeItem(at: copy) }
@@ -61,16 +69,24 @@ struct Installer {
             try output.write(contentsOf: chunk)
         }
         try output.close()
-        try install(packageAt: copy)
+        return try install(packageAt: copy)
     }
 
-    func install(packageAt packageURL: URL) throws {
+    @discardableResult
+    func install(packageAt packageURL: URL) throws -> URL {
         guard let keyHex = helperBundle.object(forInfoDictionaryKey: UpdaterService.publicKeyInfoKey) as? String,
               let publicKey = UpdatePackage.publicKey(hex: keyHex) else { throw Failure.notConfigured }
-        let appURL = helperBundle.bundleURL.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let runningApp = helperBundle.bundleURL.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let appURL = AppLocation.original(of: runningApp)
         guard appURL.pathExtension == "app", let app = Bundle(url: appURL), let bundleID = app.bundleIdentifier,
               let installed = (app.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String).flatMap(AppVersion.init) else {
             throw Failure.notInsideApp
+        }
+        // A disk image, or a folder this user can't change: say so before unpacking anything.
+        let folder = appURL.deletingLastPathComponent()
+        let readOnlyVolume = (try? folder.resourceValues(forKeys: [.volumeIsReadOnlyKey]))?.volumeIsReadOnly ?? false
+        guard !readOnlyVolume, FileManager.default.isWritableFile(atPath: folder.path) else {
+            throw Failure.readOnlyLocation(folder.path)
         }
 
         let manifest: UpdateManifest
@@ -88,7 +104,12 @@ struct Installer {
 
         // Unpack on the same volume as the app, so the final move is a rename.
         let fileManager = FileManager.default
-        let work = try fileManager.url(for: .itemReplacementDirectory, in: .userDomainMask, appropriateFor: appURL, create: true)
+        let work: URL
+        do {
+            work = try fileManager.url(for: .itemReplacementDirectory, in: .userDomainMask, appropriateFor: appURL, create: true)
+        } catch {
+            throw Failure.cantReplace(error.localizedDescription)
+        }
         defer { try? fileManager.removeItem(at: work) }
         let zip = work.appendingPathComponent("update.zip")
         let unpacked = work.appendingPathComponent("unpacked", isDirectory: true)
@@ -117,6 +138,7 @@ struct Installer {
             if let trashed { try? fileManager.moveItem(at: trashed as URL, to: appURL) }
             throw Failure.cantReplace(error.localizedDescription)
         }
+        return appURL
     }
 
     private func checkCodeSignature(of newApp: URL, comparedWith installedApp: URL) throws {

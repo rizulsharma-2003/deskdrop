@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.8.1 — 2026-10-27
+
+### Fixed
+- **Updates failed with "the volume … is read only"** on Macs where DeskDrop was downloaded and opened with **Open Anyway**. macOS runs such an app from a hidden, read-only copy of itself ("App Translocation"), and the updater tried to replace that copy. It now finds where DeskDrop really is and updates it there, which also ends the read-only copy for later launches.
+  - Copies of 1.8.0 or earlier that show this error can't install 1.8.1 by themselves. Do this once: quit DeskDrop (menu bar › **Quit DeskDrop Completely**), run `xattr -dr com.apple.quarantine /Applications/DeskDrop.app` in Terminal (or install the 1.8.1 DMG over the old copy), and open it again.
+- Running DeskDrop straight from the DMG now explains that it has to be moved to Applications before it can update, instead of showing a file-system error.
+- A failed update is now written to the system log, with the reason.
+
 ## 1.8.0 — 2026-10-27
 
 ### Changed
