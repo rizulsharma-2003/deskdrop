@@ -39,11 +39,15 @@ protocol UpdateInstalling {
     func install(packageAt url: URL) async throws
 }
 
-/// DeskDrop updates, spread Mac to Mac with no server.
+/// DeskDrop updates, from GitHub Releases and from Mac to Mac.
 ///
-/// - **Publishing:** the publisher opens a `.deskdropupdate` file (made by
-///   `scripts/build-release.sh`, signed with their key) in Settings › About. This
-///   Mac then offers it to every colleague who connects.
+/// - **Publishing:** `scripts/publish-release.sh` attaches the signed
+///   `.deskdropupdate` to a GitHub release, which every copy checks for at launch
+///   and every few hours. The publisher can also open the file in Settings › About
+///   to offer it straight to colleagues nearby.
+/// - **Automatic updates:** a newer version is downloaded in the background and,
+///   when automatic updates are on, installed while DeskDrop is idle (not in front,
+///   nothing transferring).
 /// - **Finding:** a colleague's offer is accepted only if it's signed with the key
 ///   built into this copy of DeskDrop and is newer than what's installed.
 /// - **Updating:** the package is downloaded from a colleague who has it, checked
@@ -71,6 +75,11 @@ final class UpdateService {
 
     private(set) var available: Available?
     private(set) var phase: Phase = .idle
+    /// Checking the update feed (GitHub) right now.
+    private(set) var isChecking = false
+    private(set) var lastChecked: Date?
+    /// Why the last check didn't work, if it didn't.
+    private(set) var checkFailure: String?
     /// The newest verified package this Mac has, which it offers to colleagues.
     private(set) var shared: UpdateManifest?
 
@@ -80,8 +89,9 @@ final class UpdateService {
 
     /// A newer version was found (once per version), with who offered it.
     @ObservationIgnored var onUpdateFound: ((UpdateManifest, String) -> Void)?
-    /// The new version is installed; relaunch into it.
-    @ObservationIgnored var onInstalled: (() -> Void)?
+    /// The new version is installed; relaunch into it. True when it was installed
+    /// automatically (so relaunch quietly), false when someone clicked Update.
+    @ObservationIgnored var onInstalled: ((Bool) -> Void)?
 
     @ObservationIgnored private let transport: any UpdateTransport
     @ObservationIgnored private let publicKey: Curve25519.Signing.PublicKey?
@@ -96,6 +106,18 @@ final class UpdateService {
     /// Colleagues this Mac is sending the package to right now.
     @ObservationIgnored private var uploads: Set<String> = []
     @ObservationIgnored private var announced: Set<String> = []
+    @ObservationIgnored private let feed: (any UpdateFeed)?
+    @ObservationIgnored private let installsAutomatically: () -> Bool
+    @ObservationIgnored private let isIdle: () -> Bool
+    /// Install as soon as the download finishes (someone clicked Update).
+    @ObservationIgnored private var installWhenDownloaded = false
+    @ObservationIgnored private var checking: Task<Void, Never>?
+
+    /// How often the feed is checked, and how long after launch the first check waits.
+    static let checkInterval: Duration = .seconds(6 * 3600)
+    static let firstCheckDelay: Duration = .seconds(20)
+    /// How often an automatic install looks for a quiet moment.
+    static let idleCheckInterval: Duration = .seconds(60)
 
     static let maxUploads = 3
     static let requestWait: Duration = .seconds(20)
@@ -107,8 +129,13 @@ final class UpdateService {
     }
 
     init(transport: any UpdateTransport, publicKey: Curve25519.Signing.PublicKey?, bundleID: String,
-         currentVersion: String, directory: URL = UpdateService.defaultDirectory, installer: (any UpdateInstalling)?) {
+         currentVersion: String, directory: URL = UpdateService.defaultDirectory, installer: (any UpdateInstalling)?,
+         feed: (any UpdateFeed)? = nil, installsAutomatically: @escaping () -> Bool = { false },
+         isIdle: @escaping () -> Bool = { true }) {
         self.transport = transport
+        self.feed = feed
+        self.installsAutomatically = installsAutomatically
+        self.isIdle = isIdle
         self.publicKey = publicKey
         self.bundleID = bundleID
         self.currentVersion = currentVersion
@@ -168,12 +195,81 @@ final class UpdateService {
     /// Downloads the update if needed, then installs it and relaunches.
     func update() {
         guard let available else { return }
+        installWhenDownloaded = true
         if available.isDownloaded {
             install()
             return
         }
         guard !isDownloading else { return }
         requestFromNextSource(after: nil)
+    }
+
+    // MARK: - The update feed (GitHub)
+
+    var hasFeed: Bool { feed != nil && isEnabled }
+
+    /// Checks the feed now, then every few hours; and installs downloaded updates
+    /// automatically when DeskDrop is idle (if that's on).
+    func startAutomaticUpdates() {
+        guard isEnabled, checking == nil else { return }
+        checking = Task { @MainActor [weak self] in
+            try? await Task.sleep(for: Self.firstCheckDelay)
+            var sinceCheck = Duration.zero
+            while !Task.isCancelled {
+                guard let self else { return }
+                if sinceCheck == .zero { await self.checkFeed() }
+                self.installIfIdle()
+                try? await Task.sleep(for: Self.idleCheckInterval)
+                sinceCheck += Self.idleCheckInterval
+                if sinceCheck >= Self.checkInterval { sinceCheck = .zero }
+            }
+        }
+    }
+
+    /// Asks the feed for a newer version and, if there is one, downloads and
+    /// checks it. Only a verified package becomes `available`.
+    func checkFeed() async {
+        guard let feed, isEnabled, !isChecking else { return }
+        isChecking = true
+        defer {
+            isChecking = false
+            lastChecked = .now
+        }
+        do {
+            guard let release = try await feed.latest(), isNewer(release.version),
+                  !(available?.isDownloaded == true && available?.manifest.version == release.version) else {
+                checkFailure = nil
+                return
+            }
+            let file = try await feed.download(release)
+            defer { try? FileManager.default.removeItem(at: file) }
+            guard let publicKey,
+                  let checked = try? UpdatePackage.verifyPackage(at: file, publicKey: publicKey, bundleID: bundleID),
+                  isNewer(checked.manifest.version) else {
+                checkFailure = String(localized: "The update on GitHub isn’t signed with this copy’s key, so it was ignored.")
+                return
+            }
+            let isNew = available?.manifest.version != checked.manifest.version
+            try keep(file, manifest: checked.manifest, offer: checked.offer)
+            checkFailure = nil
+            if !isDownloading, phase != .installing { phase = .idle }
+            if isNew { onUpdateFound?(checked.manifest, "GitHub") }
+            announced.removeAll()
+            for peer in transport.readyPeers { announce(to: peer.id) }
+            if installWhenDownloaded { install() } else { installIfIdle() }
+        } catch GitHubReleases.Failure.rateLimited {
+            checkFailure = String(localized: "GitHub asked DeskDrop to wait; it will check again later.")
+        } catch {
+            checkFailure = String(localized: "Couldn’t reach GitHub to check for updates.")
+        }
+    }
+
+    /// With automatic updates on: installs a downloaded update while DeskDrop is
+    /// in the background and nothing is being sent or received.
+    func installIfIdle() {
+        guard installsAutomatically(), available?.isDownloaded == true, phase == .idle, isIdle() else { return }
+        Log.app.notice("Installing an update automatically")
+        install()
     }
 
     private var isDownloading: Bool {
@@ -185,8 +281,11 @@ final class UpdateService {
         guard let available else { return }
         let candidates = available.sources.drop { previous != nil && $0 != previous }.dropFirst(previous == nil ? 0 : 1)
         guard let source = candidates.first(where: { transport.peer(for: $0)?.presence == .ready }) else {
-            phase = .failed(String(localized: "Nobody who has DeskDrop \(available.manifest.version) is connected right now. Try again when they’re nearby."))
             expected = nil
+            // A background download just tries again when someone offers it next.
+            phase = installWhenDownloaded
+                ? .failed(String(localized: "Nobody who has DeskDrop \(available.manifest.version) is connected right now. Try again when they’re nearby."))
+                : .idle
             return
         }
         do {
@@ -213,7 +312,7 @@ final class UpdateService {
             do {
                 try await installer.install(packageAt: url)
                 Log.app.notice("Installed DeskDrop \(available.manifest.version, privacy: .public)")
-                onInstalled?()
+                onInstalled?(!installWhenDownloaded)
             } catch {
                 phase = .failed(error.localizedDescription)
             }
@@ -282,6 +381,8 @@ final class UpdateService {
         available = Available(manifest: manifest, offer: offer, sources: [peerID], isDownloaded: false)
         let name = transport.peer(for: peerID)?.displayName ?? String(localized: "a colleague")
         onUpdateFound?(manifest, name)
+        // With automatic updates, fetch it now; it installs at a quiet moment.
+        if installsAutomatically(), !isDownloading { requestFromNextSource(after: nil) }
     }
 
     private func receiveRequest(_ version: String, from peerID: String) {
@@ -318,7 +419,8 @@ final class UpdateService {
             phase = .failed(String(localized: "DeskDrop couldn’t save the update: \(error.localizedDescription)"))
             return
         }
-        install()
+        phase = .idle
+        if installWhenDownloaded { install() } else { installIfIdle() }
     }
 }
 

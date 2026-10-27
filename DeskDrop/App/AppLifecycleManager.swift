@@ -66,8 +66,14 @@ final class AppLifecycleManager {
         model.updates.onUpdateFound = { [weak self] manifest, name in
             self?.notifications.notifyUpdate(version: manifest.version, from: name)
         }
-        model.updates.onInstalled = { [weak self] in
-            UpdateInstaller.relaunch { self?.quitCompletely() }
+        model.updates.onInstalled = { [weak self] automatic in
+            guard let self else { return }
+            if automatic {
+                // Come back as we were: a closed window stays closed.
+                let showing = NSApp.windows.contains { $0.isVisible && $0.identifier?.rawValue == SceneID.main }
+                model.settings.noteQuietRelaunch(showingWindow: showing)
+            }
+            UpdateInstaller.relaunch { self.quitCompletely() }
         }
     }
 
@@ -75,7 +81,13 @@ final class AppLifecycleManager {
         NSApp.appearance = model.settings.appearance.nsAppearance
         guard !isHostingUnitTests else { return }
         notifications.start(requestingPermission: !isUITesting)
-        ensureMainWindowIsShown()
+        if let showWindow = isUITesting ? nil : model.settings.takeQuietRelaunch() {
+            // Relaunched by an automatic update.
+            if showWindow { ensureMainWindowIsShown() }
+            notifications.notifyUpdated(to: DeviceInfo.shortVersion)
+        } else {
+            ensureMainWindowIsShown()
+        }
         #if DEBUG
         if UITestSupport.isUITesting {
             observeIncomingPanel()
@@ -94,6 +106,20 @@ final class AppLifecycleManager {
             }
             if UITestSupport.showsTyping {
                 model.chat.showTypingForUITesting("00000000-0000-4000-8000-000000000002")
+            }
+            if let package = UITestSupport.installsUpdate {
+                model.publishUpdate(at: package)
+                model.showingUpdate = true
+                model.updates.update()
+            } else if UITestSupport.checksForUpdates {
+                Task { @MainActor [model] in
+                    await model.updates.checkFeed()
+                    Log.app.notice("UI testing: checked GitHub; available \(model.updates.available?.manifest.version ?? "none", privacy: .public)")
+                    model.updates.update()
+                }
+            } else if let package = UITestSupport.showsUpdate {
+                model.publishUpdate(at: package)
+                model.showingUpdate = true
             }
             refreshNotificationStatus()
             // Long enough for the test to inspect the overlay after releasing the drag.
@@ -424,6 +450,25 @@ enum UITestSupport {
     /// Simulates a colleague sending a message every second into the open conversation.
     static var simulatesLiveMessages: Bool {
         ProcessInfo.processInfo.arguments.contains("-DeskDropUITestLiveMessages")
+    }
+
+    /// Installs this update package straight away (end-to-end update test).
+    static var installsUpdate: URL? {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let index = arguments.firstIndex(of: "-DeskDropUITestInstallUpdate"), index + 1 < arguments.count else { return nil }
+        return URL(fileURLWithPath: arguments[index + 1])
+    }
+
+    /// Checks GitHub for an update and installs it (end-to-end update test).
+    static var checksForUpdates: Bool {
+        ProcessInfo.processInfo.arguments.contains("-DeskDropUITestCheckForUpdates")
+    }
+
+    /// Offers this update package and opens the update sheet, without installing.
+    static var showsUpdate: URL? {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let index = arguments.firstIndex(of: "-DeskDropUITestShowUpdate"), index + 1 < arguments.count else { return nil }
+        return URL(fileURLWithPath: arguments[index + 1])
     }
 
     /// Opens the GIFs and stickers picker in the open conversation.

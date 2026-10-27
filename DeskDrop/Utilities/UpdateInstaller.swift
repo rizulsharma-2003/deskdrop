@@ -17,6 +17,8 @@ struct UpdateInstaller: UpdateInstalling {
     }
 
     func install(packageAt url: URL) async throws {
+        let file = UncheckedSendable(try FileHandle(forReadingFrom: url))
+        defer { try? file.value.close() }
         let connection = NSXPCConnection(serviceName: UpdaterService.name)
         connection.remoteObjectInterface = NSXPCInterface(with: UpdaterXPC.self)
         connection.resume()
@@ -30,7 +32,7 @@ struct UpdateInstaller: UpdateInstalling {
                 resumed.value.resume(throwing: Failure.helperUnavailable)
                 return
             }
-            updater.installUpdate(atPath: url.path) { @Sendable message in
+            updater.installUpdate(file.value) { @Sendable message in
                 resumed.value.resume(returning: message)
             }
         }
@@ -38,11 +40,19 @@ struct UpdateInstaller: UpdateInstalling {
     }
 
     /// Opens the newly installed copy, which waits for this one to quit before it
-    /// starts sharing, then quits this one.
+    /// starts sharing, then quits this one. (A sandboxed app can't pass launch
+    /// arguments, so the new copy finds this one by its location instead.)
     static func relaunch(quit: () -> Void) {
+        #if DEBUG
+        // A test copy must not come back as a real DeskDrop with your settings.
+        if UITestSupport.isUITesting {
+            Log.app.notice("UI testing: installed; quitting without relaunching")
+            quit()
+            return
+        }
+        #endif
         let configuration = NSWorkspace.OpenConfiguration()
         configuration.createsNewApplicationInstance = true
-        configuration.arguments = [RelaunchSupport.waitArgument, String(ProcessInfo.processInfo.processIdentifier)]
         NSWorkspace.shared.openApplication(at: Bundle.main.bundleURL, configuration: configuration) { @Sendable _, error in
             if let error { Log.app.error("Relaunch failed: \(error.localizedDescription, privacy: .public)") }
         }
@@ -76,22 +86,25 @@ private final class ResumeOnce<T: Sendable>: @unchecked Sendable {
     }
 }
 
-/// The new copy of DeskDrop waits for the old one to finish quitting, so the two
-/// never share the network at once.
+/// After an update, the new copy of DeskDrop waits for the old one (same app,
+/// same place) to finish quitting, so the two never share the network at once.
 enum RelaunchSupport {
-    static let waitArgument = "-DeskDropRelaunchedFrom"
-
-    /// The process ID of the copy that's quitting, if this launch is a relaunch.
-    static var previousProcess: pid_t? {
-        let arguments = ProcessInfo.processInfo.arguments
-        guard let index = arguments.firstIndex(of: waitArgument), index + 1 < arguments.count else { return nil }
-        return pid_t(arguments[index + 1])
+    /// Other running copies of this app at this location.
+    @MainActor
+    static var previousCopies: [NSRunningApplication] {
+        let me = ProcessInfo.processInfo.processIdentifier
+        let path = Bundle.main.bundleURL.standardizedFileURL.path
+        return NSRunningApplication.runningApplications(withBundleIdentifier: Bundle.main.bundleIdentifier ?? "")
+            .filter { $0.processIdentifier != me && $0.bundleURL?.standardizedFileURL.path == path }
     }
 
-    /// Waits (up to 10 s) for that copy to quit.
+    /// Waits (up to 10 s) for them to quit.
+    @MainActor
     static func waitForPreviousCopy() async {
-        guard let pid = previousProcess, let previous = NSRunningApplication(processIdentifier: pid) else { return }
-        for _ in 0..<100 where !previous.isTerminated {
+        let previous = previousCopies
+        guard !previous.isEmpty else { return }
+        Log.app.notice("Waiting for the previous copy of DeskDrop to quit")
+        for _ in 0..<100 where previous.contains(where: { !$0.isTerminated }) {
             try? await Task.sleep(for: .milliseconds(100))
         }
     }

@@ -76,6 +76,9 @@ enum SettingsKey {
     static let stickerRemovesBackground = "stickerRemovesBackground"
     static let mediaPickerTab = "mediaPickerTab"
     static let sendLinkPreviews = "sendLinkPreviews"
+    static let installUpdatesAutomatically = "installUpdatesAutomatically"
+    static let quietRelaunchAt = "quietRelaunchAt"
+    static let quietRelaunchShowsWindow = "quietRelaunchShowsWindow"
 }
 
 /// How long a dragged file must be held still before nearby Macs appear around it.

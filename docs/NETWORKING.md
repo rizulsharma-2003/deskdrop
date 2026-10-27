@@ -119,9 +119,25 @@ A chat message may also carry a link preview, made by the sender's Mac before th
 
 GIPHY search itself (`api.giphy.com/v1/{gifs,stickers}/{trending,search}`) happens only on the Mac doing the searching, with its API key, the search text, the content rating and the language. DeskDrop doesn't send GIPHY's analytics pings or any identifier.
 
+### Updates
+
+**From GitHub:** at launch (after 20 s) and every 6 hours, each Mac asks `https://api.github.com/repos/<owner>/<name>/releases/latest` (repository from `DeskDropUpdateRepository` in Info.plist). If the tag (`v1.8.0`) is newer than the running version and the release has a `.deskdropupdate` asset downloadable from that repository on `github.com` over HTTPS, the package is downloaded (it redirects to GitHub's file servers) and checked exactly like one from a colleague. Drafts and pre-releases are ignored. Only a verified package is shown or installed.
+
+**From nearby Macs:**
+
+```json
+{ "v": 1, "type": "updateAvailable", "update": { "manifest": "<base64 JSON>", "signature": "<base64, 64 bytes>" } }
+{ "v": 1, "type": "updateRequest",   "version": "1.8.0" }
+```
+
+- A Mac holding a verified `.deskdropupdate` package sends `updateAvailable` to each colleague whose hello lists `"update"`, when they connect and when a package is published. The manifest (bundle ID, version, build, minimum macOS, archive size and SHA-256, notes, date) is the exact signed JSON.
+- The receiver accepts an offer only if the Ed25519 signature checks against the public key built into its copy (`DeskDropUpdatePublicKey` in Info.plist, from `Config/UpdateKey.xcconfig`), the bundle ID matches, and the version is newer than its own. Builds without a key ignore updates.
+- `updateRequest` asks for the package. The holder sends it as a Multipeer resource named `update/<version>` (at most 3 uploads at once). A resource with that name is accepted only from the colleague it was requested from, for that version; anything else is cancelled. If nothing starts within 20 s, the next colleague who offered it is asked.
+- The received package is verified in full (signature, the manifest identical to the one offered, archive size and SHA-256) before it's kept or installed.
+
 Files need no chat message of their own. Each Mac already knows every transfer it took part in (offer, accept, progress, outcome) and shows those in the conversation.
 
-`hello` may carry `"capabilities": ["chat", "typing", "avatar", "media"]`. Older versions omit it, and they drop the chat types as unknown without disconnecting. In the same way, 1.2.x drops `chatReaction` and `chatRead`, so its users don't see reactions or send receipts. DeskDrop therefore shows those colleagues as needing an update before you can chat.
+`hello` may carry `"capabilities": ["chat", "typing", "avatar", "media", "update"]`. Older versions omit it, and they drop the chat types as unknown without disconnecting. In the same way, 1.2.x drops `chatReaction` and `chatRead`, so its users don't see reactions or send receipts. DeskDrop therefore shows those colleagues as needing an update before you can chat.
 
 Decoding (`ProtocolCodec`) is strict:
 
@@ -206,3 +222,5 @@ Progress comes from the `Progress` objects Multipeer Connectivity returns for ea
 | Profile photo / sticker image | 600,000 bytes, 1,024 px each way, PNG, JPEG or GIF |
 | Image requests answered per peer | 40 per 10 s |
 | GIPHY download | 12 MB, GIPHY media hosts only |
+| Update package | 300 MB archive, 16 KB manifest, 8,000 characters of notes |
+| Update uploads at once | 3 |

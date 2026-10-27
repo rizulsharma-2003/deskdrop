@@ -109,6 +109,14 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         post(content, id: UUID())
     }
 
+    /// DeskDrop updated itself in the background.
+    func notifyUpdated(to version: String) {
+        let content = UNMutableNotificationContent()
+        content.title = String(localized: "DeskDrop updated to \(version)")
+        content.body = String(localized: "Click to see what’s new.")
+        post(content, id: UUID())
+    }
+
     /// A sample message notification, for checking permission and the sound.
     func notifyTest(sound: UNNotificationSound?) {
         let content = UNMutableNotificationContent()

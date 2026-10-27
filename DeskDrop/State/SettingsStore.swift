@@ -127,6 +127,30 @@ final class SettingsStore {
         didSet { defaults.set(sendLinkPreviews, forKey: SettingsKey.sendLinkPreviews) }
     }
 
+    /// Download updates and install them while DeskDrop is idle, then relaunch quietly.
+    var installUpdatesAutomatically: Bool {
+        didSet { defaults.set(installUpdatesAutomatically, forKey: SettingsKey.installUpdatesAutomatically) }
+    }
+
+    /// Set just before an automatic update relaunches DeskDrop, so the new copy
+    /// comes back the way the old one was (window closed stays closed).
+    func noteQuietRelaunch(showingWindow: Bool) {
+        defaults.set(Date.now, forKey: SettingsKey.quietRelaunchAt)
+        defaults.set(showingWindow, forKey: SettingsKey.quietRelaunchShowsWindow)
+    }
+
+    /// After an automatic update: whether to show the window. Nil if this launch
+    /// isn't one (the note is used once and expires after two minutes).
+    func takeQuietRelaunch() -> Bool? {
+        defer {
+            defaults.removeObject(forKey: SettingsKey.quietRelaunchAt)
+            defaults.removeObject(forKey: SettingsKey.quietRelaunchShowsWindow)
+        }
+        guard let at = defaults.object(forKey: SettingsKey.quietRelaunchAt) as? Date,
+              Date.now.timeIntervalSince(at) < 120 else { return nil }
+        return defaults.bool(forKey: SettingsKey.quietRelaunchShowsWindow)
+    }
+
     /// The GIFs and stickers picker opens where you last left it.
     var mediaPickerTab: String {
         didSet { defaults.set(mediaPickerTab, forKey: SettingsKey.mediaPickerTab) }
@@ -216,6 +240,7 @@ final class SettingsStore {
         stickerRemovesBackground = defaults.object(forKey: SettingsKey.stickerRemovesBackground) as? Bool ?? true
         mediaPickerTab = defaults.string(forKey: SettingsKey.mediaPickerTab) ?? "gifs"
         sendLinkPreviews = defaults.object(forKey: SettingsKey.sendLinkPreviews) as? Bool ?? true
+        installUpdatesAutomatically = defaults.object(forKey: SettingsKey.installUpdatesAutomatically) as? Bool ?? true
         leftEdge = Self.loadAssignment(forKey: SettingsKey.leftEdge, in: defaults)
         rightEdge = Self.loadAssignment(forKey: SettingsKey.rightEdge, in: defaults)
     }

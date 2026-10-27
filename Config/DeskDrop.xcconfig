@@ -3,4 +3,9 @@
 // The publisher's update-signing public key (64 hex characters). Empty means
 // in-app updates are off. `scripts/update-key.sh create` writes UpdateKey.xcconfig.
 DESKDROP_UPDATE_PUBLIC_KEY =
+
+// The GitHub repository whose releases DeskDrop updates from ("owner/name").
+// Empty means updates only come from colleagues' Macs.
+DESKDROP_UPDATE_REPOSITORY = rizulsharma-2003/deskdrop
+
 #include? "UpdateKey.xcconfig"

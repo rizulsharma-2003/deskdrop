@@ -6,8 +6,11 @@ import Foundation
 /// with the publisher's key, newer than the copy of DeskDrop it's embedded in,
 /// over that copy.
 @objc protocol UpdaterXPC {
-    /// Installs the package at `path`. Replies nil on success, or a message to show.
-    func installUpdate(atPath path: String, withReply reply: @escaping @Sendable (String?) -> Void)
+    /// Installs the package read from `package`, an open file (the helper can't
+    /// look inside the app's sandbox container, and works on its own copy so the
+    /// file can't change between checking and installing). Replies nil on
+    /// success, or a message to show.
+    func installUpdate(_ package: FileHandle, withReply reply: @escaping @Sendable (String?) -> Void)
 }
 
 enum UpdaterService {

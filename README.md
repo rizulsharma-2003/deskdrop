@@ -22,6 +22,7 @@ No accounts, no cloud, no server, no analytics.
 - **Emoji keyboard.** The smiley beside the message box opens a searchable emoji picker with categories and your recent emoji. The full macOS Character Viewer is one click away.
 - **Markdown.** Write `**bold**`, `*italic*`, `~~strikethrough~~`, `` `code` ``, links, code blocks, quotes, lists and headings; they show formatted on Macs with DeskDrop 1.7 and as typed on older ones. Web and email addresses become links.
 - **GIFs and stickers.** The **GIF** button in the message field searches GIPHY for GIFs and animated stickers. **My Stickers** turns your own pictures into stickers, cutting out the subject like Photos does.
+- **Automatic updates.** DeskDrop updates itself from this repository's [GitHub releases](https://github.com/rizulsharma-2003/deskdrop/releases) (and from colleagues' Macs nearby), installing quietly while it isn't in use. Only updates signed with the publisher's key are accepted. See [Publishing updates](#publishing-updates).
 - **Link previews.** Links you send arrive with a card showing the page's title, picture and site. Your Mac makes it; colleagues' Macs never contact the site.
 - **Profile photos.** Pick a photo in Settings and colleagues see it on your Mac on their desk, in their conversation list and beside your group messages.
 - **Read receipts.** One-on-one messages show *Sent*, *Delivered* and then *Read 3:41 PM* once your colleague opens the conversation. Turn off sending your own receipts in Settings.
@@ -129,6 +130,34 @@ scripts/build-release.sh
 
 The current builds are **not notarized**. Notarization can't be done without the team's credentials.
 
+## Publishing updates
+
+DeskDrop updates itself from the latest release of [rizulsharma-2003/deskdrop](https://github.com/rizulsharma-2003/deskdrop/releases) (set in `Config/DeskDrop.xcconfig`), and colleagues' Macs also pass updates to each other.
+
+**Once (already done for this repository):**
+
+```sh
+scripts/update-key.sh create   # makes the signing key, stores it in your login keychain,
+                               # writes the public half to Config/UpdateKey.xcconfig
+scripts/update-key.sh export   # prints the private key: save it in your password manager
+```
+
+Colleagues install DeskDrop once from a release's DMG; from then on it updates itself.
+
+**For each new version:**
+
+1. Bump `MARKETING_VERSION` (and `CURRENT_PROJECT_VERSION`) in the project and add the version to CHANGELOG.md. Its section becomes the "What's new" text.
+2. Commit and push.
+3. Run `scripts/publish-release.sh`. It builds (signing the update with your key from the keychain), tags the commit `v<version>` and creates the GitHub release with the DMG and `DeskDrop-<version>.deskdropupdate`.
+
+Every copy of DeskDrop checks GitHub at launch and every 6 hours. A newer release is downloaded and checked in the background. With **Install updates automatically** on (the default in release builds, in Settings › About; Debug builds from Xcode never install on their own), it's installed while DeskDrop isn't in front and nothing is transferring, and DeskDrop reopens as it was with a "DeskDrop updated" notification. With it off, people see **Update to <version>** in the header, the menu bar and a notification, and choose when.
+
+To reach colleagues nearby straight away (or Macs without internet), also open the `.deskdropupdate` in **Settings › About › Publish Update…**: Macs nearby are offered it and download it from yours, then pass it on.
+
+**How it's kept safe:** GitHub is only a place to download from; nothing is trusted because it came from there. Only packages signed with your private key are accepted, checked by every Mac against the public key built into its copy and again by the installer helper. A package must be for DeskDrop, newer than what's installed, intact (SHA-256), and contain a validly code-signed app. If your build is signed with a Developer ID, updates must be signed by the same team. Keep the private key safe: anyone with it can publish DeskDrop updates to your colleagues. If it's lost, publish a new key in a build that colleagues install by hand.
+
+The installer helper (`DeskDropUpdater.xpc`, inside the app) runs outside the App Sandbox, because a sandboxed app can't replace itself and every file it writes is quarantined. It can only install a signed, newer DeskDrop over the copy it's in. Installing needs permission to write where DeskDrop is (normally /Applications, which administrator accounts have).
+
 ## Tests
 
 ```sh
@@ -162,6 +191,7 @@ See [docs/TESTING.md](docs/TESTING.md) for what each suite covers, the latest re
 - **Identity isn't verified.** A display name is just a name. Anyone running DeskDrop on your network can call themselves "Alex's Mac". Each request also shows a short device ID to help tell Macs apart, but that isn't cryptographic either. See [docs/SECURITY.md](docs/SECURITY.md).
 - **Gestures start from a drag.** macOS doesn't tell apps when you long-press a file, and a sandboxed app can't read Finder's selection. So "hold to share" begins once you start dragging, then pause. Only regular files are detected: items that use file promises (some Mail attachments, Photos) need the main window.
 - **Chat has no server.** A one-on-one message is delivered when both Macs are running DeskDrop at the same time. Group history spreads Mac to Mac when colleagues connect, so someone who's never online at the same time as anyone else won't receive it. Chat names aren't verified identities, same as for files.
+- **Updates need one manual install first.** Copies from before 1.7.0 (or built without the update key) don't update themselves: install a release's DMG once. GitHub checks need internet; nearby Macs pass updates on without it. GitHub allows about 60 checks an hour from one network address, plenty for an office checking every 6 hours. A Mac that isn't an administrator account may not be allowed to replace DeskDrop in /Applications.
 - **Link previews come from your Mac.** Sending a link makes your Mac load that page (as Messages does), so the site sees your Mac's IP address.
 - **GIFs need GIPHY.** Searching needs a GIPHY API key and an internet connection, and every Mac that shows a GIF downloads it from GIPHY's servers, so GIPHY sees those Macs' IP addresses (DeskDrop sends GIPHY nothing else). Profile photos and stickers made from your pictures go only between your Macs. Colleagues on DeskDrop 1.6 or earlier see a GIF as a link and a sticker as *[Sticker]*.
 - **Transfers don't resume.** If the connection drops, the transfer fails with a clear message and you can **Try Again** from the start.
@@ -183,10 +213,13 @@ DeskDrop/
   Components/     Design tokens and reusable controls
   Utilities/      Logging, formatting, timers, small helpers
   Resources/      Info.plist
+DeskDropUpdater/  The installer helper (XPC service, outside the sandbox) for in-app updates
+Shared/           Update package format, shared by the app, the helper and the signing tool
+Config/           DeskDrop.xcconfig; UpdateKey.xcconfig (your public update key, once created)
 DeskDropTests/    Swift Testing unit + integration tests
 DeskDropUITests/  XCTest UI tests
 docs/             Architecture, networking, security, testing
-scripts/          build-release.sh, generate-icons.swift
+scripts/          build-release.sh, update-key.sh, update-tool.swift, generate-icons.swift
 ```
 
 More: [Architecture](docs/ARCHITECTURE.md) · [Networking & protocol](docs/NETWORKING.md) · [Security & privacy](docs/SECURITY.md) · [Testing](docs/TESTING.md) · [Changelog](CHANGELOG.md)

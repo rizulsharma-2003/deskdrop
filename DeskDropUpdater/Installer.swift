@@ -45,6 +45,25 @@ struct Installer {
     /// The helper's own bundle: …/DeskDrop.app/Contents/XPCServices/DeskDropUpdater.xpc
     let helperBundle: Bundle
 
+    /// Copies the package out of `handle`, then checks and installs the copy.
+    func install(from handle: FileHandle) throws {
+        let copy = FileManager.default.temporaryDirectory.appendingPathComponent("DeskDrop-\(UUID().uuidString).deskdropupdate")
+        FileManager.default.createFile(atPath: copy.path, contents: nil)
+        defer { try? FileManager.default.removeItem(at: copy) }
+        let output = try FileHandle(forWritingTo: copy)
+        var written: Int64 = 0
+        while let chunk = try handle.read(upToCount: 1 << 20), !chunk.isEmpty {
+            written += Int64(chunk.count)
+            guard written <= UpdatePackage.maxArchiveBytes + Int64(UpdatePackage.maxManifestBytes) + 1024 else {
+                try? output.close()
+                throw Failure.package(.tooLarge)
+            }
+            try output.write(contentsOf: chunk)
+        }
+        try output.close()
+        try install(packageAt: copy)
+    }
+
     func install(packageAt packageURL: URL) throws {
         guard let keyHex = helperBundle.object(forInfoDictionaryKey: UpdaterService.publicKeyInfoKey) as? String,
               let publicKey = UpdatePackage.publicKey(hex: keyHex) else { throw Failure.notConfigured }

@@ -9,6 +9,8 @@
 		<string>_deskdrop._tcp</string>
 		<string>_deskdrop._udp</string>
 	</array>
+	<key>DeskDropUpdateRepository</key>
+	<string>$(DESKDROP_UPDATE_REPOSITORY)</string>
 	<key>DeskDropUpdatePublicKey</key>
 	<string>$(DESKDROP_UPDATE_PUBLIC_KEY)</string>
 	<key>GIPHYAPIKey</key>

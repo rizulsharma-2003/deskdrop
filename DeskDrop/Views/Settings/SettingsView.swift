@@ -549,11 +549,12 @@ private struct AboutSettingsView: View {
     }
 }
 
-/// Updates from colleagues' Macs, and publishing one if you're the publisher.
+/// Updates (from GitHub and colleagues' Macs), and publishing one if you're the publisher.
 private struct UpdatesBox: View {
     @Environment(DeskDropViewModel.self) private var model
 
     var body: some View {
+        @Bindable var settings = model.settings
         let updates = model.updates
         GroupBox {
             VStack(alignment: .leading, spacing: 8) {
@@ -565,20 +566,36 @@ private struct UpdatesBox: View {
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 } else {
-                    HStack {
+                    HStack(alignment: .top) {
                         Text(statusText)
                             .font(.system(size: 11.5))
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(updates.checkFailure == nil ? AnyShapeStyle(.secondary) : AnyShapeStyle(Theme.warning))
                             .fixedSize(horizontal: false, vertical: true)
                         Spacer()
                         if updates.available != nil {
                             Button("Update…") { model.showingUpdate = true; NSApp.activate() }
+                        } else if updates.hasFeed {
+                            Button(updates.isChecking ? "Checking…" : "Check Now") {
+                                Task { await updates.checkFeed() }
+                            }
+                            .disabled(updates.isChecking)
+                            .accessibilityIdentifier("checkForUpdatesButton")
                         }
                     }
+                    Toggle("Install updates automatically", isOn: $settings.installUpdatesAutomatically)
+                        .font(.system(size: 11.5))
+                        .disabled(DeskDropViewModel.isDevelopmentBuild)
+                        .accessibilityIdentifier("autoUpdateToggle")
+                    Text(DeskDropViewModel.isDevelopmentBuild
+                         ? "This is a development build, so it only installs updates when you click Update."
+                         : "DeskDrop downloads new versions in the background and installs them while it isn’t in front and nothing is being sent, then reopens as it was.")
+                        .font(.system(size: 11))
+                        .foregroundStyle(.tertiary)
+                        .fixedSize(horizontal: false, vertical: true)
                     Divider()
                     HStack {
                         Text(updates.shared.map { String(localized: "This Mac shares DeskDrop \($0.version) with colleagues nearby.") }
-                             ?? String(localized: "Publishing a new version? Open its .deskdropupdate file here and colleagues nearby are offered it."))
+                             ?? String(localized: "Publishing? Open a .deskdropupdate here to offer it to colleagues nearby right away."))
                             .font(.system(size: 11.5))
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
@@ -594,10 +611,19 @@ private struct UpdatesBox: View {
     }
 
     private var statusText: String {
-        if let available = model.updates.available {
-            return String(localized: "DeskDrop \(available.manifest.version) is available.")
+        let updates = model.updates
+        if let available = updates.available {
+            return available.isDownloaded
+                ? String(localized: "DeskDrop \(available.manifest.version) is downloaded and ready to install.")
+                : String(localized: "DeskDrop \(available.manifest.version) is available.")
         }
-        return String(localized: "DeskDrop checks with colleagues’ Macs whenever they connect, and tells you when a newer version is around.")
+        if let failure = updates.checkFailure { return failure }
+        if updates.hasFeed, let checked = updates.lastChecked {
+            return String(localized: "DeskDrop \(updates.currentVersion) is up to date. Checked \(checked.formatted(date: .omitted, time: .shortened)).")
+        }
+        return updates.hasFeed
+            ? String(localized: "DeskDrop checks GitHub for updates every few hours, and hears about them from colleagues’ Macs.")
+            : String(localized: "DeskDrop hears about updates from colleagues’ Macs when they connect.")
     }
 }
 

@@ -142,11 +142,14 @@ final class DeskDropViewModel {
         self.connection = connection
         self.library = library
         self.history = HistoryStore(fileURL: historyURL)
-        self.transfers = TransferService(transport: connection, destination: destination)
+        let transfers = TransferService(transport: connection, destination: destination)
+        self.transfers = transfers
         self.updates = UpdateService(transport: connection, publicKey: Self.updatePublicKey,
                                      bundleID: Bundle.main.bundleIdentifier ?? "com.deskdrop.app",
                                      currentVersion: DeviceInfo.shortVersion, directory: updatesDirectory,
-                                     installer: UpdateInstaller())
+                                     installer: UpdateInstaller(), feed: GitHubReleases.bundled,
+                                     installsAutomatically: { !Self.isDevelopmentBuild && settings.installUpdatesAutomatically },
+                                     isIdle: { !NSApp.isActive && !transfers.transfers.contains { $0.phase.isActive } })
         self.chat = ChatService(transport: connection, store: ChatStore(fileURL: chatURL),
                                 media: MediaExchange(transport: connection, library: library),
                                 linkPreviews: { url in
@@ -171,6 +174,7 @@ final class DeskDropViewModel {
 
     func start() {
         destination.removeStaleStagingFiles()
+        updates.startAutomaticUpdates()
         Task.detached(priority: .background) { RemoteImageCache.trimDisk() }
         pathObserver.start()
         setSharingEnabled(settings.startSharingOnLaunch)
@@ -368,6 +372,15 @@ final class DeskDropViewModel {
     var unreadMessageCount: Int { chat.store.totalUnread }
 
     // MARK: - Updates
+
+    /// Debug builds (run from Xcode) never update themselves on their own.
+    static var isDevelopmentBuild: Bool {
+        #if DEBUG
+        true
+        #else
+        false
+        #endif
+    }
 
     /// The publisher's key built into this copy (Config/UpdateKey.xcconfig), if any.
     static var updatePublicKey: Curve25519.Signing.PublicKey? {

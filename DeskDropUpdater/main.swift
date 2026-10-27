@@ -10,9 +10,9 @@ final class UpdaterEndpoint: NSObject, UpdaterXPC, NSXPCListenerDelegate, @unche
         return true
     }
 
-    func installUpdate(atPath path: String, withReply reply: @escaping @Sendable (String?) -> Void) {
+    func installUpdate(_ package: FileHandle, withReply reply: @escaping @Sendable (String?) -> Void) {
         do {
-            try Installer(helperBundle: .main).install(packageAt: URL(fileURLWithPath: path))
+            try Installer(helperBundle: .main).install(from: package)
             reply(nil)
         } catch {
             reply(error.localizedDescription)
